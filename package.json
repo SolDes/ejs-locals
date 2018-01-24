@@ -12,13 +12,13 @@
   },
   "homepage": "https://github.com/randometc/ejs-locals",
   "engines": {
-    "node": ">=0.6.0"
+    "node": "8.9.4"
   },
   "dependencies": {
-    "ejs": "0.8.x"
+    "ejs": "2.5.7"
   },
   "devDependencies": {
-    "express": "~3.0.0",
+    "express": "4.16.2",
     "mocha": "*",
     "should": "*",
     "methods": "0.0.1"
