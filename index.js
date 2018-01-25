@@ -2,8 +2,41 @@ const ejs = require('ejs');
 const { extname, join, resolve, dirname, basename, sep } = require('path');
 const fs = require('fs');
 const exists = require('fs').existsSync;
+const BLOCK_REGEX = /<%\s*block\('([$a-zA-Z_][a-zA-Z_0-9]*)'\)\s*%>((?:.|\s)*?)<%\s*\/block\s*%>/ig;
 
 let cache = {};
+
+/*
+ * Override EJS renderFile to allow super simple block structure
+ */
+ejs.renderFile = function(path, options, fn) {
+  const key = path + ':string';
+
+  if (typeof options === 'function') {
+    fn = options;
+    options = {};
+  }
+
+  options.filename = path;
+
+  try {
+    let str = options.cache
+      ? cache[key] || (cache[key] = fs.readFileSync(path, 'utf8'))
+      : fs.readFileSync(path, 'utf8');
+
+    // New code.
+    // Uses Regex to catch all blocks, render them, save them in object, and clean them from html
+    let blocks = {};
+    str = str.replace(BLOCK_REGEX, function(_, blockName, blockContent) {
+      blocks[blockName] = ejs.render(blockContent, options);
+      return '';
+    });
+    // return html and generated blocks
+    fn(null, ejs.render(str, options), blocks);
+  } catch (err) {
+    fn(err);
+  }
+};
 
 function compile(file, options, cb) {
   // Express used to set options.locals for us, but now we do it ourselves
@@ -59,9 +92,15 @@ function renderFile(file, options, fn) {
   options.locals.layout = layout.bind(options);
   options.locals.partial = partial.bind(options);
 
-  ejs.renderFile(file, options, function(err, html) {
+  ejs.renderFile(file, options, function(err, html, blocks) {
     if (err) {
       return fn(err, html);
+    }
+
+    if (blocks) {
+      for (let blockName in blocks) {
+        options.block(blockName, blocks[blockName]);
+      }
     }
 
     let layout = options.locals._layoutFile;
