@@ -9,20 +9,22 @@ let cache = {};
 /*
  * Override EJS renderFile to allow super simple block structure
  */
-ejs.renderFile = function(path, options, fn) {
-  const key = path + ':string';
+ejs.renderFile = function(file, options, fn) {
+  const key = file + ':string';
 
   if (typeof options === 'function') {
     fn = options;
     options = {};
   }
 
-  options.filename = path;
+  options.__proto__ = options.locals;
+
+  options.filename = file;
 
   try {
     let str = options.cache
-      ? cache[key] || (cache[key] = fs.readFileSync(path, 'utf8'))
-      : fs.readFileSync(path, 'utf8');
+      ? cache[key] || (cache[key] = fs.readFileSync(file, 'utf8'))
+      : fs.readFileSync(file, 'utf8');
 
     // New code.
     // Uses Regex to catch all blocks, render them, save them in object, and clean them from html
