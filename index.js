@@ -2,7 +2,7 @@ const ejs = require('ejs');
 const { extname, join, resolve, dirname, basename, sep } = require('path');
 const fs = require('fs');
 const exists = require('fs').existsSync;
-const BLOCK_REGEX = /<%\s*block\('([$a-zA-Z_][a-zA-Z_0-9]*)'\)\s*%>((?:.|\s)*?)<%\s*\/block\s*%>/ig;
+const BLOCK_REGEX = /<%\s*contentFor\('([$a-zA-Z_][a-zA-Z_0-9]*)'\)\s*%>((?:.|\s)*?)<%\s*\/contentFor\s*%>/ig;
 
 let cache = {};
 
