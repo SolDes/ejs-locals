@@ -9,22 +9,20 @@ let cache = {};
 /*
  * Override EJS renderFile to allow super simple block structure
  */
-ejs.renderFile = function(file, options, fn) {
-  const key = file + ':string';
+ejs.renderFile = function(path, options, fn) {
+  const key = path + ':string';
 
   if (typeof options === 'function') {
     fn = options;
     options = {};
   }
 
-  options.__proto__ = options.locals;
-
-  options.filename = file;
+  options.filename = path;
 
   try {
     let str = options.cache
-      ? cache[key] || (cache[key] = fs.readFileSync(file, 'utf8'))
-      : fs.readFileSync(file, 'utf8');
+      ? cache[key] || (cache[key] = fs.readFileSync(path, 'utf8'))
+      : fs.readFileSync(path, 'utf8');
 
     // New code.
     // Uses Regex to catch all blocks, render them, save them in object, and clean them from html
@@ -44,7 +42,7 @@ function compile(file, options, cb) {
   // Express used to set options.locals for us, but now we do it ourselves
   // (EJS does some __proto__ magic to expose these funcs/values in the template)
   if (!options.locals) {
-    options.locals = {};
+    options.locals = Object.assign({}, options);
   }
 
   options.__proto__ = options.locals;
@@ -75,7 +73,7 @@ function renderFile(file, options, fn) {
   // Express used to set options.locals for us, but now we do it ourselves
   // (EJS does some __proto__ magic to expose these funcs/values in the template)
   if (!options.locals) {
-    options.locals = {};
+    options.locals = Object.assign({}, options);
   }
 
   options.__proto__ = options.locals;
