@@ -224,7 +224,10 @@ function block(name, html) {
 // bound to scripts Block in renderFile
 function script(path, type) {
   if (path) {
-    this.append('<script src="' + path + '"' + (type ? ' type="' + type + '"' : '') + '></script>');
+    const script = '<script src="' + path + '"' + (type ? ' type="' + type + '"' : '') + '></script>';
+    if (this.html.length === 0 || this.html.find(item => item !== script)) {
+      this.append(script);
+    }
   }
   return this;
 }
@@ -232,7 +235,10 @@ function script(path, type) {
 // bound to stylesheets Block in renderFile
 function stylesheet(path, media) {
   if (path) {
-    this.append('<link rel="stylesheet" href="' + path + '"' + (media ? ' media="' + media + '"' : '') + ' />');
+    const stylesheet = '<link rel="stylesheet" href="' + path + '"' + (media ? ' media="' + media + '"' : '') + ' />';
+    if (this.html.length === 0 || this.html.find(item => item !== stylesheet)) {
+      this.append(stylesheet);
+    }
   }
   return this;
 }
