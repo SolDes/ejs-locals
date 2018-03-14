@@ -12,10 +12,10 @@
   },
   "homepage": "https://github.com/randometc/ejs-locals",
   "engines": {
-    "node": "8.10.0"
+    "node": ">=8.10.0"
   },
   "dependencies": {
-    "ejs": "2.5.7"
+    "ejs": ">=2.5.7"
   },
   "devDependencies": {
     "express": "4.16.2",
